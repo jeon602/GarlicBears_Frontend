@@ -27,6 +27,7 @@ import UserAgreement from './UserAgreement';
 import { useNavigate } from 'react-router-dom';
 import axiosInstance from '../../api/axiosInstance';
 import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
+import userSpeechRecognition from './UserSpeechRecognition';
 
 function UserSignup() {
   const [email, setEmail] = useState('');
@@ -59,6 +60,13 @@ function UserSignup() {
     /^(?!.*\s)[a-zA-Z0-9가-힣\uD83C-\uDBFF\uDC00-\uDFFF]{3,20}$/u;
 
   const handleTogglePasswordVisibility = () => setShowPassword(!showPassword);
+
+  const handleResult = (transcript: string) => {
+    setNickName(transcript);
+  };
+
+  const { listening, startListening, stopListening } =
+    userSpeechRecognition(handleResult);
 
   let submitAvailable =
     emailAvailable &&
@@ -341,7 +349,12 @@ function UserSignup() {
                   placeholder="3-20자 이내, 한글, 영어 대소문자, 숫자, 이모지 사용 가능합니다."
                   onChange={(e) => setNickName(e.target.value)}
                 ></Input>
-                <Button size="md" borderRadius="full">
+                <Button
+                  size="md"
+                  borderRadius="full"
+                  onClick={startListening}
+                  disabled={listening}
+                >
                   <FontAwesomeIcon
                     icon={faMicrophoneLines}
                     style={{ color: '#ff711a' }}
